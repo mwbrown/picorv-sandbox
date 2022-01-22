@@ -1,0 +1,15 @@
+amaranth==0.3
+amaranth-yosys==0.10.0.dev46
+attrs==21.4.0
+cocotb==1.6.1
+iniconfig==1.1.1
+Jinja2==2.11.3
+MarkupSafe==2.0.1
+packaging==21.3
+pluggy==1.0.0
+py==1.11.0
+pyparsing==3.0.6
+pytest==6.2.5
+pyvcd==0.2.4
+toml==0.10.2
+wasmtime==0.32.0

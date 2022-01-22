@@ -1,0 +1,12 @@
+
+# Firmware build outputs
+fw/*.elf
+fw/*.vh
+fw/*.lst
+fw/**/*.o
+
+# Simulation outputs
+__pycache__/
+sim/sim_build/
+sim/results.xml
+sim/dump.vcd
