@@ -14,6 +14,10 @@ class PicoRV32(NativeBusMaster):
 
         m.submodules += Instance("picorv32",
 
+            p_PROGADDR_RESET = C(0x10000000, Shape(32)), # 32'h 1000_0000,
+            p_PROGADDR_IRQ = C(0x10000010, Shape(32)),   # 32'h 1000_0010,
+            p_COMPRESSED_ISA = C(1),
+
             i_clk = ClockSignal(),
             i_resetn = ~ResetSignal(),
             o_trap = self.rv_trap,
@@ -30,9 +34,9 @@ class PicoRV32(NativeBusMaster):
             # Memory lookahead interface (ignored)
             o_mem_la_read = Signal(),
             o_mem_la_write = Signal(),
-            o_mem_la_addr = Signal(),
-            o_mem_la_wdata = Signal(),
-            o_mem_la_wstrb = Signal(),
+            o_mem_la_addr = Signal(32),
+            o_mem_la_wdata = Signal(32),
+            o_mem_la_wstrb = Signal(4),
 
             # Coprocessor interface (not implemented)
             o_pcpi_valid = Signal(),
@@ -46,7 +50,7 @@ class PicoRV32(NativeBusMaster):
 
             # IRQ interface (not implemented)
             i_irq = C(0, Shape(32)), #(32'b0),
-            o_eoi = Signal(),
+            o_eoi = Signal(32),
 
             # Trace interface (ignored)
             o_trace_valid = Signal(),
