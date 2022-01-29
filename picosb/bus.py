@@ -46,6 +46,7 @@ class NativeBus(Elaboratable):
         self.master = None
         self.slaves = {}
         self.page_width = page_width
+        self.mem_page = Signal(self.page_width)
 
     def attach_master(self, m : NativeBusMaster) -> None:
         if self.master is not None:
@@ -77,11 +78,11 @@ class NativeBus(Elaboratable):
         mem_ready = self.master.mem_ready_i
 
         # Create a sub-signal for the upper address bits, to indicate the page.
-        mem_page = mem_addr.bit_select(32 - self.page_width, self.page_width)
+        m.d.comb += self.mem_page.eq(mem_addr.bit_select(32 - self.page_width, self.page_width))
         page_shape = Shape(self.page_width)
 
         for page, s in self.slaves.items():
-            addr_valid = mem_valid & mem_page == C(page, page_shape)
+            addr_valid = mem_valid & (self.mem_page == C(page, page_shape))
 
             m.d.comb += [
                 s.mem_valid_i.eq(addr_valid),
