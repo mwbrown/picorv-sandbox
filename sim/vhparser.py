@@ -13,7 +13,7 @@ def load_le_vh(filename):
     offset = 0
 
     # objcopy produces files with CRLF line terminators
-    with open(filename, 'rU') as f:
+    with open(filename, 'r') as f:
         for line in map(str.strip, f.readlines()):
 
             if line.startswith('@'):

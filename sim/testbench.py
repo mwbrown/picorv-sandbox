@@ -12,22 +12,26 @@ RESET_CLOCK_CYCLES = 3
 
 def is_end_condition(dut):
 
-    return dut.rst.value == 0 and \
-           dut.rv_mem_valid.value == 1 and \
-           dut.rv_mem_addr.value == 0xF00F0000 and \
-           dut.rv_mem_byte_wr_ena != 0 and \
-           dut.rv_mem_wdata.value == 0xDEADDEAD
+    return dut.cpu.rst.value == 0 and \
+           dut.cpu.mem_valid_o.value == 1 and \
+           dut.cpu.mem_addr_o.value == 0xF00F0000 and \
+           dut.cpu.mem_byte_wr_ena_o != 0 and \
+           dut.cpu.mem_wdata_o.value == 0xDEADDEAD
 
 def dump_ram(dut):
     for x in range(10):
-        print(hex(dut.ram.ram_data[x].value))
+        print(hex(dut.ram.mem[x].value))
 
 @cocotb.test()
 async def run_until_fw_end(dut):
+
+    # The top module is wrapped by am_top.v, so
+    # "unwrap" it here.
+    dut = dut.top
    
     #init_rom(dut)
     for (offset, word) in load_le_vh('../fw/output.vh'):
-        dut.rom.rom_data[offset >> 2].value = word
+        dut.rom.mem[offset >> 2].value = word
 
     # Run 1MHz clock
     clock = Clock(dut.clk, CLOCK_PERIOD_NS, units='ns')
@@ -42,7 +46,7 @@ async def run_until_fw_end(dut):
     await Timer(CLOCK_PERIOD_NS / 4, units='ns')
     dut.rst.value = 0
 
-    # Run for 80 clock cycles
+    # Run for "enough" clock cycles or until we see a magic write.
     for i in itertools.count():
         await FallingEdge(dut.clk)
 
@@ -58,7 +62,7 @@ async def run_until_fw_end(dut):
                 await FallingEdge(dut.clk)
             raise
 
-        if i > 1000000:
+        if i > 40000:
             raise IndexError('Test did not complete in time.')
 
     dump_ram(dut)

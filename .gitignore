@@ -10,3 +10,6 @@ __pycache__/
 sim/sim_build/
 sim/results.xml
 sim/dump.vcd
+
+# Generated Amaranth output.
+rtl/am_gen.v

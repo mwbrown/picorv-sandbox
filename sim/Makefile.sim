@@ -1,11 +1,11 @@
 
 TOPLEVEL_LANG = verilog
 
-VERILOG_SOURCES := ../rtl/top.v
-VERILOG_SOURCES += ../rtl/memory.v
 VERILOG_SOURCES += ../rtl/picorv32.v
+VERILOG_SOURCES += ../rtl/am_gen.v
+VERILOG_SOURCES += ../rtl/am_top.v
 
-TOPLEVEL := top
+TOPLEVEL := am_top
 MODULE := testbench
 
 include $(shell cocotb-config --makefiles)/Makefile.sim
