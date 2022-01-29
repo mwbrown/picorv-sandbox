@@ -15,6 +15,9 @@ class NativeMemory(NativeBusSlave):
         self.is_ram = is_ram
         self.is_async = is_async
 
+        if self.is_ram and self.is_async:
+            raise RuntimeError('RAMs cannot be async.')
+
     def elaborate(self, platform):
         m = super().elaborate(platform)
 
@@ -22,8 +25,11 @@ class NativeMemory(NativeBusSlave):
 
         mem = Memory(width=32, depth=self.depth)
 
-        rp = mem.read_port(transparent=False, domain=domain)
+        rp = mem.read_port(transparent=self.is_async, domain=domain)
         m.submodules.rd_port = rp
+
+        # Derive the actual word offset within the RAM.
+        offset = self.mem_addr_i.shift_right(2)
 
         if self.is_ram:
             # This memory bus is read-or-write, never both.
@@ -36,7 +42,7 @@ class NativeMemory(NativeBusSlave):
 
             # Assign the write port to the NativeBusSlave signals.
             m.d.comb += [
-                wp.addr.eq(self.mem_addr_i),
+                wp.addr.eq(offset),
                 wp.data.eq(self.mem_wdata_i),
                 wp.en.eq(self.mem_byte_wr_ena_i),
             ]
@@ -47,8 +53,7 @@ class NativeMemory(NativeBusSlave):
 
         # Assign the read port to the NativeBusSlave signals.
         m.d.comb += [
-            rp.en.eq(read_en),
-            rp.addr.eq(self.mem_addr_i),
+            rp.addr.eq(offset),
             self.mem_rdata_o.eq(rp.data),
         ]
 
@@ -61,6 +66,9 @@ class NativeMemory(NativeBusSlave):
             # Generate a signal to indicate a low-to-high mem_valid edge.
             mem_valid_prev = Signal()
 
+            # This signal is only assignable for sync memories.
+            m.d.comb += rp.en.eq(read_en)
+
             # Acknowledge the transaction on the next cycle.
             m.d.sync += [
                 mem_valid_prev.eq(self.mem_valid_i),
@@ -71,10 +79,10 @@ class NativeMemory(NativeBusSlave):
 
 class NativeRAM(NativeMemory):
 
-    def __init__(self, size=1024) -> None:
+    def __init__(self, *, size=1024) -> None:
         super().__init__(size=size, is_ram=True)
 
 class NativeROM(NativeMemory):
 
-    def __init__(self, *, size=1024) -> None:
-        super().__init__(size=size, is_ram=False)
+    def __init__(self, *, size=1024, is_async=False) -> None:
+        super().__init__(size=size, is_ram=False, is_async=is_async)
