@@ -1,7 +1,7 @@
 
 from amaranth import *
 
-from .bus import NativeBusSlave
+from ..soc.bus import NativeBusSlave
 
 class NativeMemory(NativeBusSlave):
     def __init__(self, *, size, is_ram, is_async=False) -> None:

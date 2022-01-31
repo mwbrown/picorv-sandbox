@@ -1,9 +1,9 @@
 
 from amaranth import *
 
-from .cpu import PicoRV32
-from .bus import NativeBus, FakePeriph
-from .mem import NativeRAM, NativeROM
+from .soc.cpu import PicoRV32
+from .soc.bus import NativeBus, FakePeriph
+from .periph.mem import NativeRAM, NativeROM
 
 class PicoSB(Elaboratable):
 
