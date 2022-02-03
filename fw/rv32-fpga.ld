@@ -61,23 +61,26 @@ SECTIONS
     . = ALIGN(4);
   } >ROM
 
-  _sidata = LOADADDR(.data);
+  PROVIDE ( _sidata = LOADADDR(.data) );
+  PROVIDE ( _sdata = . );
 
   .data :
   {
     . = ALIGN(4);
-    _sdata = .;
 
     *(.data)
     *(.data*)
+    *(.sdata)
+    *(.sdata*)
 
-    . = ALIGN(4);
-    _edata = .;
   } >RAM AT> ROM
 
-  . = ALIGN(4);
+  PROVIDE ( _edata = . );
+
   .bss :
   {
+    . = ALIGN(4);
+    
     _sbss = .;
 
     *(.bss)

@@ -10,8 +10,8 @@ SPECS=-specs=picolibc.specs
 
 CPUFLAGS=-march=rv32ic -mabi=ilp32
 ASFLAGS=$(CPUFLAGS)
-CFLAGS=$(CPUFLAGS) $(SPECS) -Og
-LDFLAGS=$(CPUFLAGS) $(SPECS) -Trv32-fpga.ld
+CFLAGS=$(CPUFLAGS) $(SPECS) -Og -ffunction-sections -fdata-sections
+LDFLAGS=$(CPUFLAGS) $(SPECS) -Trv32-fpga.ld -Wl,-Map=output.map -Wl,-gc-sections
 
 .PHONY: all clean
 
