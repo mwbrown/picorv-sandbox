@@ -64,15 +64,18 @@ class NativeMemory(NativeBusSlave):
             ]
         else:
             # Generate a signal to indicate a low-to-high mem_valid edge.
-            mem_valid_prev = Signal()
+            # NOTE: this is removed here because mem_ready_o was getting
+            #       hanged in a case where the CPU kept mem_valid_o high
+            #       for back-to-back transfers (thus screwing up the logic).
+            #mem_valid_prev = Signal()
 
             # This signal is only assignable for sync memories.
             m.d.comb += rp.en.eq(read_en)
 
             # Acknowledge the transaction on the next cycle.
             m.d.sync += [
-                mem_valid_prev.eq(self.mem_valid_i),
-                self.mem_ready_o.eq(~mem_valid_prev & self.mem_valid_i),
+                #mem_valid_prev.eq(self.mem_valid_i),
+                self.mem_ready_o.eq(~self.mem_ready_o & self.mem_valid_i),
             ]
 
         return m
