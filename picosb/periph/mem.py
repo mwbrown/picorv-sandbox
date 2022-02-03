@@ -67,6 +67,8 @@ class NativeMemory(NativeBusSlave):
             # NOTE: this is removed here because mem_ready_o was getting
             #       hanged in a case where the CPU kept mem_valid_o high
             #       for back-to-back transfers (thus screwing up the logic).
+            # This condition can be replicated when the CPU needs to fetch a
+            # 32-bit instruction that is not 4-byte aligned.
             #mem_valid_prev = Signal()
 
             # This signal is only assignable for sync memories.
