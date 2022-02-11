@@ -13,3 +13,17 @@ sim/dump.vcd
 
 # Generated Amaranth output.
 rtl/am_gen.v
+
+# Quartus build outputs.
+quartus/**/db/
+quartus/**/incremental_db/
+quartus/**/*.map.*
+quartus/**/*.fit.*
+quartus/**/*.bak
+quartus/**/*.sof
+quartus/**/*.rpt
+quartus/**/*.summary
+quartus/**/*.pin
+quartus/**/*.jdi
+quartus/**/*.done
+quartus/**/*.qws
