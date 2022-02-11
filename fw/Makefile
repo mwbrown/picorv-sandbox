@@ -21,7 +21,7 @@ clean:
 	rm -f src/*.o
 	rm -f output.elf output.vh output.lst
 
-output.elf: src/crt0.o src/main.o
+output.elf: src/crt0.o src/sim_main.o
 	$(CC) $(LDFLAGS) -o $@ -nostartfiles -nostdlib $^
 
 # This seems to generate a file with groups of 4-bytes, in little endian format.
