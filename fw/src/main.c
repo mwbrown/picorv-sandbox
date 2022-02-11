@@ -6,12 +6,19 @@ volatile uint8_t * const dp8 = (volatile uint8_t *)0x20000000;
 volatile uint16_t * const dp16 = (volatile uint16_t *)0x20000000;
 volatile uint32_t * const dp32 = (volatile uint32_t *)0x20000000;
 
+volatile uint32_t * const gpio_dir = (volatile uint32_t *)0x40010000;
+volatile uint32_t * const gpio_pin = (volatile uint32_t *)0x40010004;
+volatile uint32_t * const gpio_pout = (volatile uint32_t *)0x40010008;
+
+uint32_t init_me = 0xABCDF00F;
+
 // The simulator is listening for this memory access to signal
 // the end of the test case.
 void test_case_finish()
 {
     volatile uint32_t * const finish = (volatile uint32_t *)0xF00F0000;
     *finish = 0xDEADDEAD;
+    init_me++;
 }
 
 void writeData()
@@ -38,6 +45,9 @@ void writeData()
 
 void main(void) 
 {
+    *gpio_dir = 0x11110000;
+    *gpio_pout = ~(*gpio_pin);
+
     __asm volatile("nop");
     __asm volatile("nop");
 

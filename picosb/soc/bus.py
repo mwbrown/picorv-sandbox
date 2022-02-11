@@ -25,6 +25,10 @@ class NativeBusSlave(Elaboratable):
     def __init__(self) -> None:
         super().__init__()
 
+        # This variable controls whether the NativeBus will provide
+        # the full accessed address, or just the lower bits.
+        self.needs_full_addr = False
+
         self.mem_valid_i = Signal() # Bus access valid input (asserted until acked).
         self.mem_addr_i = Signal(32) # Bus address input.
         self.mem_instr_i = Signal() # Instruction fetch. Currently ignored.
@@ -46,7 +50,9 @@ class NativeBus(Elaboratable):
         self.master = None
         self.slaves = {}
         self.page_width = page_width
+        self.offset_width = 32 - page_width
         self.mem_page = Signal(self.page_width)
+        self.mem_offset = Signal(self.offset_width)
 
     def attach_master(self, m : NativeBusMaster) -> None:
         if self.master is not None:
@@ -77,16 +83,20 @@ class NativeBus(Elaboratable):
         mem_rdata = self.master.mem_rdata_i
         mem_ready = self.master.mem_ready_i
 
-        # Create a sub-signal for the upper address bits, to indicate the page.
-        m.d.comb += self.mem_page.eq(mem_addr.bit_select(32 - self.page_width, self.page_width))
-        page_shape = Shape(self.page_width)
+        # Generate the page and offset signals by splitting the address.
+        m.d.comb += [
+            self.mem_offset.eq(mem_addr.bit_select(0, self.offset_width)),
+            self.mem_page.eq(mem_addr.bit_select(self.offset_width, self.page_width)),
+        ]
 
         for page, s in self.slaves.items():
-            addr_valid = mem_valid & (self.mem_page == C(page, page_shape))
+            addr_valid = mem_valid & (self.mem_page == C(page, self.page_width))
+
+            addr_sig = mem_addr if s.needs_full_addr else self.mem_offset
 
             m.d.comb += [
                 s.mem_valid_i.eq(addr_valid),
-                s.mem_addr_i.eq(mem_addr),
+                s.mem_addr_i.eq(addr_sig),
                 s.mem_instr_i.eq(mem_instr),
                 s.mem_wdata_i.eq(mem_wdata),
                 s.mem_byte_wr_ena_i.eq(mem_byte_wr_ena),

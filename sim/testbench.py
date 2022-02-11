@@ -7,7 +7,7 @@ import itertools
 
 from vhparser import load_le_vh
 
-CLOCK_PERIOD_NS = 1000
+CLOCK_PERIOD_NS = 20
 RESET_CLOCK_CYCLES = 3
 
 def is_end_condition(dut):
@@ -33,7 +33,7 @@ async def run_until_fw_end(dut):
     for (offset, word) in load_le_vh('../fw/output.vh'):
         dut.rom.mem[offset >> 2].value = word
 
-    # Run 1MHz clock
+    # Run 50 MHz clock
     clock = Clock(dut.clk, CLOCK_PERIOD_NS, units='ns')
     cocotb.start_soon(clock.start())
 
