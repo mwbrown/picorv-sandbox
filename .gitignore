@@ -4,6 +4,7 @@ fw/*.elf
 fw/*.vh
 fw/*.lst
 fw/**/*.o
+fw/build
 
 # Simulation outputs
 __pycache__/

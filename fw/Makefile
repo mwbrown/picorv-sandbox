@@ -22,7 +22,7 @@ clean:
 	rm -f output.elf output.vh output.lst
 
 output.elf: src/crt0.o src/sim_main.o
-	$(CC) $(LDFLAGS) -o $@ -nostartfiles -nostdlib $^
+	$(CC) $(LDFLAGS) -o $@ -nostartfiles $^
 
 # This seems to generate a file with groups of 4-bytes, in little endian format.
 # Since the ROM port is 32-bit, the testbench ROM initializer will need to swap
