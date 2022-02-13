@@ -10,4 +10,4 @@ from .top import PicoSB
 #
 if __name__ == '__main__':
     dut = PicoSB()
-    main(dut)
+    main(dut, ports=dut.ports)
