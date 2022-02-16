@@ -10,8 +10,5 @@ project(picosb_fw)
 
 add_library(picosb_startup src/crt0.s)
 
-# Create firmware builds for each simulation file.
-add_sim_target(main)
-
-# Create firmware builds for each test app.
-add_testapp_target(blinky)
+# Automatically detect targets with sim_ or testapp_ prefixes.
+add_firmware_targets()
