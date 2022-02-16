@@ -3,12 +3,12 @@ from amaranth import *
 
 from .soc.cpu import PicoRV32
 from .soc.bus import NativeBus, FakePeriph
-from .periph.mem import NativeRAM, NativeROM
+from .periph.mem import NativeRAM, NativeROM, read_init_bin
 from .periph.gpio import BasicGpio
 
 class PicoSB(Elaboratable):
 
-    def __init__(self) -> None:
+    def __init__(self, firmware=None) -> None:
         super().__init__()
 
         self.gpio_oe = Signal(32)
@@ -21,8 +21,15 @@ class PicoSB(Elaboratable):
             self.gpio_oe,
         ]
 
+        self.firmware=firmware
+        self.fw_init=None
+
     def elaborate(self, platform):
         del platform # Unused
+
+        # Process any ROM initialization files passed in.
+        if self.firmware is not None:
+            self.fw_init = read_init_bin(self.firmware)
 
         m = Module()
 
@@ -32,7 +39,7 @@ class PicoSB(Elaboratable):
         ram = NativeRAM(size=1024)
         m.submodules.ram = ram
 
-        rom = NativeROM(size=1024)
+        rom = NativeROM(size=1024, init=self.fw_init)
         m.submodules.rom = rom
 
         gpio = BasicGpio()

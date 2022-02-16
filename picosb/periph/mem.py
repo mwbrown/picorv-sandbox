@@ -1,10 +1,12 @@
 
+import struct
+
 from amaranth import *
 
 from ..soc.bus import NativeBusSlave
 
 class NativeMemory(NativeBusSlave):
-    def __init__(self, *, size, is_ram, is_async=False) -> None:
+    def __init__(self, *, size, is_ram, is_async=False, init=None) -> None:
         super().__init__()
 
         # TODO probably want to limit this to power-of-two instances
@@ -14,6 +16,7 @@ class NativeMemory(NativeBusSlave):
         self.depth = size // 4
         self.is_ram = is_ram
         self.is_async = is_async
+        self.init = init
 
         if self.is_ram and self.is_async:
             raise RuntimeError('RAMs cannot be async.')
@@ -23,7 +26,7 @@ class NativeMemory(NativeBusSlave):
 
         domain = 'comb' if self.is_async else 'sync'
 
-        mem = Memory(width=32, depth=self.depth)
+        mem = Memory(width=32, depth=self.depth, init=self.init)
 
         rp = mem.read_port(transparent=self.is_async, domain=domain)
         m.submodules.rd_port = rp
@@ -89,5 +92,13 @@ class NativeRAM(NativeMemory):
 
 class NativeROM(NativeMemory):
 
-    def __init__(self, *, size=1024, is_async=False) -> None:
-        super().__init__(size=size, is_ram=False, is_async=is_async)
+    def __init__(self, *, size=1024, is_async=False, init=None) -> None:
+        super().__init__(size=size, is_ram=False, is_async=is_async, init=init)
+
+def read_init_bin(filename):
+
+    with open(filename, 'rb') as f:
+        # Interpret the whole file as an array of little-endian uint32
+        values = [x[0] for x in struct.iter_unpack('<I', f.read())]
+
+    return values
