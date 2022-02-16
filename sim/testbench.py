@@ -30,7 +30,7 @@ async def run_until_fw_end(dut):
     dut = dut.top
    
     #init_rom(dut)
-    for (offset, word) in load_le_vh('../fw/output.vh'):
+    for (offset, word) in load_le_vh('../fw/build/sim_main.vh'):
         dut.rom.mem[offset >> 2].value = word
 
     # Run 50 MHz clock

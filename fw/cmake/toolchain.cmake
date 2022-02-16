@@ -10,10 +10,14 @@ set(SECT_FLAGS "-ffunction-sections -fdata-sections")
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR RV32)
 
-set(CMAKE_C_COMPILER   "riscv64-unknown-elf-gcc" CACHE PATH "" FORCE)
-set(CMAKE_CXX_COMPILER "riscv64-unknown-elf-g++" CACHE PATH "" FORCE)
-set(CMAKE_ASM_COMPILER "riscv64-unknown-elf-gcc" CACHE PATH "" FORCE)
-set(CMAKE_LINKER       "riscv64-unknown-elf-gcc" CACHE PATH "" FORCE)
+set(TRIPLE "riscv64-unknown-elf-")
+
+set(CMAKE_C_COMPILER   "${TRIPLE}gcc" CACHE PATH "" FORCE)
+set(CMAKE_CXX_COMPILER "${TRIPLE}g++" CACHE PATH "" FORCE)
+set(CMAKE_ASM_COMPILER "${TRIPLE}gcc" CACHE PATH "" FORCE)
+set(CMAKE_LINKER       "${TRIPLE}gcc" CACHE PATH "" FORCE)
+set(OBJDUMP            "${TRIPLE}objdump")
+set(OBJCOPY            "${TRIPLE}objcopy")
 
 # Set flags common to both C/C++
 set(C_CXX_FLAGS "${SPECS_FLAGS} ${RV32_CPU_FLAGS} ${SECT_FLAGS}")
@@ -30,8 +34,10 @@ set(CMAKE_EXE_LINKER_FLAGS "${SPECS_FLAGS} ${RV32_CPU_FLAGS} -nostartfiles -T${C
 # configuration also seems to include CMAKE_C_FLAGS, which is not
 # desired in this case as we want low-level control of which flags
 # are passed to the linker, and which to the compiler.
+#
+# This also generates a map file (gcc-specific) [FIXME file extension].
 set(CMAKE_C_LINK_EXECUTABLE
-    "<CMAKE_C_COMPILER> <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>")
+    "<CMAKE_C_COMPILER> <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> -Wl,-Map=<TARGET>.map <LINK_LIBRARIES>")
 
 set(CMAKE_C_FLAGS_DEBUG "-Og -g" CACHE INTERNAL "")
 set(CMAKE_CXX_FLAGS_DEBUG "-Og -g" CACHE INTERNAL "")
