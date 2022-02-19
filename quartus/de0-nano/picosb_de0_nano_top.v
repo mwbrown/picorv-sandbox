@@ -177,7 +177,9 @@ wire [31:0] gpio_i;
 wire [31:0] gpio_o;
 wire [31:0] gpio_oe;
 
-top(.clk(CLOCK_50), .rst(KEY[0]), .gpio_i(gpio_i), .gpio_o(gpio_o), .gpio_oe(gpio_oe));
+// TODO: add a reset pulse generator for bootup
+
+top(.clk(CLOCK_50), .rst(~KEY[0]), .gpio_i(gpio_i), .gpio_o(gpio_o), .gpio_oe(gpio_oe));
 
 assign gpio_i = 32'b0;
 assign LED = gpio_o[7:0] & gpio_oe[7:0];

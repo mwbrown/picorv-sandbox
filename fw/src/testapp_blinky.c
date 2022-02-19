@@ -23,7 +23,23 @@ void main(void)
     uint8_t a = 0;
     while(1)
     {
-        *gpio_pout = a++;
-        delay();
+        // Running lights 2x
+        for (int rpt = 0; rpt < 2; rpt++)
+        {       
+            for (a = 1; a != 0; a <<= 1) {
+                *gpio_pout = a;
+                delay();
+            }
+        }
+
+        // On-off flash 4x
+        for (int rpt = 0; rpt < 4; rpt++)
+        {
+            *gpio_pout = 0xFF;
+            delay();
+
+            *gpio_pout = 0x00;
+            delay();
+        }
     }
 }
