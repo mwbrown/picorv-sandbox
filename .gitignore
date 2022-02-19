@@ -29,3 +29,6 @@ quartus/**/*.jdi
 quartus/**/*.done
 quartus/**/*.qws
 quartus/**/*.cdf
+
+# Sublime Text files
+*.sublime-workspace
