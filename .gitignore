@@ -6,11 +6,16 @@ fw/*.lst
 fw/**/*.o
 fw/build
 
-# Simulation outputs
+# Python files
 __pycache__/
+*.pyc
+pyrightconfig.json
+
+# Simulation outputs
 sim/sim_build/
 sim/results.xml
 sim/dump.vcd
+*.gtkw
 
 # Generated Amaranth output.
 rtl/am_gen.v
