@@ -28,3 +28,4 @@ quartus/**/*.pin
 quartus/**/*.jdi
 quartus/**/*.done
 quartus/**/*.qws
+quartus/**/*.cdf
